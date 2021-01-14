@@ -1,15 +1,25 @@
-const express = require('express');
-const path = require('path');
-const open = require('open');
+import express from 'express';
+import path from 'path';
+import open from 'open';
+import webpack from 'webpack';
+import config from '../webpack.config.dev';
+
+/* eslint-disable no-console */
 
 const PORT = 3000;
 const app = express();
+const compiler = webpack(config);
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '../src/index.html'));
-});
+app.use(require('webpack-dev-middleware')(compiler, {
+  infoPath: true,
+  publicPath: config.output.publicPath,
+}));
 
-app.listen(PORT, function (err) {
+app.get('/', (req, res) => 
+  res.sendFile(path.join(__dirname, '../src/index.html'))
+);
+
+app.listen(PORT, err => {
   if (err) {
     console.log(err);
   } else {
